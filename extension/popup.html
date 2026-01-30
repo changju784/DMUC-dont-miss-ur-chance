@@ -2,29 +2,187 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <script src="confetti.js"></script>
     <style>
-        body {
-            width: 200px;
-            padding: 10px;
-            font-family: sans-serif;
+        :root {
+            --primary: #FF8C00;
+            --primary-hover: #e67e22;
+            --foreground: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
         }
 
-        button {
+        body {
+            width: 350px;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            margin: 0;
+            color: var(--foreground);
+            overflow-x: hidden;
+        }
+
+        /* Header Design - Revised */
+        .header {
+            background: white;
+            padding: 20px 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            letter-spacing: -0.05em;
+            font-style: italic;
+            /* Italicized DMUC */
+            text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.05);
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+            /* Tagline is now Orange */
+            margin: 8px 0 4px;
+            font-style: italic;
+            /* Italicized Tagline */
+            line-height: 1.2;
+        }
+
+        .sub-tagline {
+            font-size: 0.72rem;
+            /* Shrunk slightly to keep on one line */
+            color: var(--muted);
+            margin: 0;
+            white-space: nowrap;
+            /* Forces one line */
+            letter-spacing: -0.01em;
+        }
+
+        /* Container & Controls - Unchanged */
+        .container {
+            padding: 20px 15px;
+            background: white;
+        }
+
+        .control-group {
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #fff;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
             width: 100%;
+            accent-color: var(--primary);
             cursor: pointer;
-            background: #34a853;
+        }
+
+        .slider-footer {
+            display: flex;
+            justify-content: flex-end;
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .flex-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #scanBtn {
+            width: 100%;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.2);
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        #scanBtn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        #scanBtn:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        #results {
+            margin-top: 15px;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 
 <body>
-    <h3>DMUC - don't miss ur chance</h3>
-    <button id="scanBtn">Scan for Admissions</button>
-    <div id="results"></div>
+    <div class="header">
+        <h1>DMUC</h1>
+        <p class="tagline">Don't miss your chance to get admitted!</p>
+        <p class="sub-tagline">Use AI-powered Gmail scanner to check your acceptance emails.</p>
+    </div>
+
+    <div class="container">
+        <div class="control-group">
+            <label>Scan Depth</label>
+            <input type="range" id="daysRange" min="1" max="30" value="7">
+            <div class="slider-footer">Last <span id="daysVal">7</span> Days</div>
+        </div>
+
+        <div class="control-group flex-row">
+            <label style="margin-bottom: 0;">Show Acceptances Only</label>
+            <input type="checkbox" id="filterToggle" checked
+                style="width: 18px; height: 18px; accent-color: var(--primary);">
+        </div>
+
+        <button id="scanBtn">Check your chance</button>
+
+        <div id="loader" class="loader"></div>
+        <div id="results"></div>
+    </div>
+
     <script src="popup.js"></script>
 </body>
 
