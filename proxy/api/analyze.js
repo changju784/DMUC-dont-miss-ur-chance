@@ -1,10 +1,9 @@
 // proxy/api/analyze.js
 export default async function handler(req, res) {
-    // 1. Security Check: Only allow POST requests
     if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
     const { emails } = req.body;
-    const API_KEY = process.env.GEMINI_API_KEY; // Stored in Vercel Dashboard
+    const API_KEY = process.env.GEMINI_API_KEY;
 
     const prompt = `Analyze these ${emails.length} job application emails. 
 For each, return: ID|CATEGORY|SCORE. 
