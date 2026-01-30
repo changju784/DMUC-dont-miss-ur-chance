@@ -27,9 +27,9 @@ scanBtn.addEventListener('click', () => {
         scanBtn.disabled = false;
 
         if (response && response.emails) {
-            let filtered = response.emails;
-            const foundAcceptance = filtered.some(e => e.category === "ADMITTED");
+            let filtered = response.emails.filter(e => e.score > 0);
 
+            const foundAcceptance = filtered.some(e => e.category === "ADMITTED");
             if (foundAcceptance) triggerConfetti();
 
             if (showOnlyAcceptance) {
@@ -37,7 +37,7 @@ scanBtn.addEventListener('click', () => {
             }
 
             if (filtered.length === 0) {
-                resultsDiv.innerHTML = `<div style="text-align:center; padding: 20px; color:#64748b; font-size:0.85rem;">No matches found.</div>`;
+                resultsDiv.innerHTML = `<div style="text-align:center; padding: 20px; color:#64748b; font-size:0.85rem;">No accepted emails found, but don't worry - you're still in the running!</div>`;
                 return;
             }
 
