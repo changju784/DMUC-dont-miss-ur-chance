@@ -42,13 +42,17 @@ scanBtn.addEventListener('click', () => {
             }
 
             resultsDiv.innerHTML = filtered.map(e => `
-                <div style="border-left: 5px solid ${getColor(e.category)}; padding: 12px; margin-bottom: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div style="font-weight: 700; color: #1e293b; font-size: 0.85rem;">${e.subject}</div>
-                    <div style="font-size: 0.7rem; color: ${getColor(e.category)}; font-weight: 800; margin-top: 6px; text-transform: uppercase;">
-                        ${e.category} • Score: ${e.score}%
-                    </div>
-                </div>
-            `).join('');
+    <div class="result-card" style="border-left-color: ${getColor(e.category)};">
+        <span class="tooltip">${e.reason || 'No specific reason provided.'}</span>
+        <div style="font-weight: 700; color: #1e293b; font-size: 0.85rem;">${e.subject}</div>
+        <div style="font-size: 0.7rem; color: ${getColor(e.category)}; font-weight: 800; margin-top: 6px; text-transform: uppercase;">
+            ${e.category} • Score: ${e.score}%
+        </div>
+        <a href="https://mail.google.com/mail/u/0/#inbox/${e.threadId}" target="_blank" class="view-btn">
+            View Email ↗
+        </a>
+    </div>
+`).join('');
         } else {
             resultsDiv.innerHTML = `<p style="color:#ef4444; font-size:0.8rem; text-align:center;">${response?.status || "Error"}</p>`;
         }

@@ -23,8 +23,10 @@ async function handleFullScan(days, mode, sendResponse) {
             const ai = (results || []).find(r => r.id === email.id);
             return {
                 subject: email.subject,
+                threadId: email.threadId,
                 category: ai ? ai.category : "NEUTRAL",
-                score: ai ? ai.score : 0
+                score: ai ? ai.score : 0,
+                reason: ai ? ai.reason : ""
             };
         });
         sendResponse({ emails: finalResults });
@@ -49,6 +51,7 @@ async function fetchEmailDetails(days) {
         const d = await dRes.json();
         return {
             id: msg.id,
+            threadId: d.threadId,
             subject: d.payload.headers.find(h => h.name === 'Subject')?.value || "No Subject",
             snippet: d.snippet || ""
         };
