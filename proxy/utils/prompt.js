@@ -10,10 +10,12 @@ const SCHOOL_RULES = `
 
 const WORK_RULES = `
 - Focus: Job Applications & Recruiting.
-- ADMITTED (90-100): Job offers, "Congratulations", "Move you forward", OR ANY human recruiter outreach ("Would you like to chat?", "Schedule a call", "Interview request"). 
-- REJECTION (0-20): "Decided to move forward with others", "Will not be proceeding", or "Unfortunately...".
-- NEUTRAL (40-60): Automated "Application Received" (no action needed yet) or technical assessment links.
-- IGNORE: LinkedIn job alerts, marketing spam, company newsletters, or payroll/benefits spam. Categorize as NEUTRAL with score 0.
+- ADMITTED (90-100): ANY email indicating a positive step forward. This includes:
+  1. Final Job Offers.
+  2. Interview invitations ("Schedule a call", "Technical interview", "Next steps").
+  3. Recruiters saying "Move you forward".
+- REJECTION (0-20): "Not moving forward", "Decided to pass", "Unfortunately", "Decided to move other candidates".
+- NEUTRAL (40-60): General status updates with no action required, or automated "Applied" receipts.
 `;
 
 export function getAnalysisPrompt(emails, mode) {

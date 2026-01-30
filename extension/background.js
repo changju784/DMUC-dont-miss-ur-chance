@@ -10,6 +10,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function handleFullScan(days, mode, sendResponse) {
     try {
         const emailData = await fetchEmailDetails(days);
+        console.log(`DEBUG: Found Email - Subj: ${subject}, Snippet: ${details.snippet}`);
         if (!emailData.length) return sendResponse({ emails: [] });
 
         const proxyRes = await fetch(PROXY_URL, {
