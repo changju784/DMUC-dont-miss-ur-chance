@@ -22,17 +22,17 @@
             overflow-x: hidden;
         }
 
-        /* Header Design - Revised */
+        /* Revised Header Section */
         .header {
             background: white;
-            padding: 20px 10px;
+            padding: 22px 10px;
             text-align: center;
             border-bottom: 1px solid var(--border);
         }
 
         .header h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: var(--primary);
             letter-spacing: -0.05em;
@@ -42,30 +42,29 @@
         }
 
         .tagline {
-            font-size: 0.95rem;
+            font-size: 0.98rem;
             font-weight: 700;
             color: var(--primary);
-            /* Tagline is now Orange */
-            margin: 8px 0 4px;
+            /* Italicized & Orange tagline */
+            margin: 6px 0 2px;
             font-style: italic;
-            /* Italicized Tagline */
             line-height: 1.2;
         }
 
         .sub-tagline {
-            font-size: 0.72rem;
-            /* Shrunk slightly to keep on one line */
+            font-size: 0.7rem;
+            /* Fine-tuned for single line */
             color: var(--muted);
             margin: 0;
             white-space: nowrap;
-            /* Forces one line */
+            /* Ensures no wrapping */
             letter-spacing: -0.01em;
         }
 
-        /* Container & Controls - Unchanged */
+        /* UI Containers & Controls */
         .container {
             padding: 20px 15px;
-            background: white;
+            background: #ffffff;
         }
 
         .control-group {
@@ -74,6 +73,7 @@
             border-radius: 12px;
             margin-bottom: 12px;
             background: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
         label {
@@ -104,18 +104,27 @@
             align-items: center;
         }
 
+        /* Checkbox Styling */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Main Action Button */
         #scanBtn {
             width: 100%;
             background: var(--primary);
             color: white;
             border: none;
             padding: 14px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.25);
             transition: all 0.2s ease;
-            font-size: 0.95rem;
+            font-size: 1rem;
             margin-top: 5px;
         }
 
@@ -124,16 +133,17 @@
             transform: translateY(-1px);
         }
 
+        #scanBtn:active {
+            transform: translateY(1px);
+        }
+
         #scanBtn:disabled {
             background: #cbd5e1;
             box-shadow: none;
             cursor: not-allowed;
         }
 
-        #results {
-            margin-top: 15px;
-        }
-
+        /* Results & Loader */
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid var(--primary);
@@ -154,6 +164,10 @@
                 transform: rotate(360deg);
             }
         }
+
+        #results {
+            margin-top: 15px;
+        }
     </style>
 </head>
 
@@ -173,8 +187,7 @@
 
         <div class="control-group flex-row">
             <label style="margin-bottom: 0;">Show Acceptances Only</label>
-            <input type="checkbox" id="filterToggle" checked
-                style="width: 18px; height: 18px; accent-color: var(--primary);">
+            <input type="checkbox" id="filterToggle" checked>
         </div>
 
         <button id="scanBtn">Check your chance</button>
