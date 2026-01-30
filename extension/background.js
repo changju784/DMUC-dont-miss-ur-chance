@@ -1,5 +1,5 @@
 // extension/background.js
-const PROXY_URL = "https://your-proxy-name.vercel.app/api/analyze";
+const PROXY_URL = "https://dmuc-dont-miss-ur-chance.vercel.app/api/analyze";
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "scan_emails") {
