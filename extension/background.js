@@ -1,6 +1,7 @@
 // extension/background.js
 const PROXY_URL = "https://dmuc-dont-miss-ur-chance.vercel.app/api/analyze";
 
+chrome.identity.clearAllCachedAuthTokens();
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "scan_emails") {
         runSecureScan(sendResponse);
@@ -29,22 +30,23 @@ async function runSecureScan(sendResponse) {
             };
         }));
 
-        // 2. Call your Proxy
         const proxyRes = await fetch(PROXY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ emails: emailDetails })
         });
 
-        const { resultText } = await proxyRes.json();
+        const { results } = await proxyRes.json(); // "results" is now a clean array from the AI
 
-        // 3. Parse results
+        // Map the AI results back to the original email list
         const finalResults = emailDetails.map((email, i) => {
-            const match = resultText.match(new RegExp(`${i}\\|(ADMITTED|REJECTION|NEUTRAL)\\|(\\d+)`, 'i'));
+            // Find the AI's analysis for this specific ID
+            const aiData = results.find(r => r.id === i);
+
             return {
                 subject: email.subject,
-                category: match ? match[1].toUpperCase() : "NEUTRAL",
-                score: match ? parseInt(match[2]) : 0
+                category: aiData ? aiData.category : "NEUTRAL",
+                score: aiData ? aiData.score : 0
             };
         });
 
