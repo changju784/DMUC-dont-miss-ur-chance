@@ -7,7 +7,7 @@
         "storage"
     ],
     "host_permissions": [
-        "https://your-proxy-name.vercel.app/*",
+        "https://dmuc-dont-miss-ur-chance.vercel.app/*",
         "https://www.googleapis.com/*"
     ],
     "background": {
