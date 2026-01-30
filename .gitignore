@@ -1,0 +1,22 @@
+# --- Sensitive Data (CRITICAL) ---
+.env
+.env.local
+.env.*.local
+
+# --- Dependencies ---
+node_modules/
+
+# --- Vercel Specific ---
+.vercel
+.turbo
+
+# --- Operating System & IDEs ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Build Outputs ---
+dist/
+build/
+*.log

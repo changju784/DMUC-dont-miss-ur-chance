@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "DMUC - Don't Miss Ur Chance",
+    "version": "2.0",
+    "permissions": [
+        "identity",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://your-proxy-name.vercel.app/*",
+        "https://www.googleapis.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    }
+}
