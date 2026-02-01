@@ -1,6 +1,7 @@
 # DMUC - Don't Miss Ur Chance
 
 **DMUC** is an AI-powered Chrome Extension designed to scan your Gmail for school or job application updates. It uses a serverless Vercel backend to securely analyze email snippets using **Google Gemini 2.5 Flash**, categorizing them so you never miss a "Congratulations" or a critical follow-up.
+<img width="1200" height="700" alt="image" src="https://github.com/user-attachments/assets/9838f97a-eaf5-44b4-b18a-ea9c01a532b8" />
 
 ---
 
