@@ -9,7 +9,7 @@ daysRange.addEventListener('input', (e) => {
     daysVal.innerText = e.target.value;
 });
 
-scanBtn.addEventListener('click', () => {
+scanBtn.addEventListener('click', async () => {
     const days = daysRange.value;
     const showOnlyAcceptance = filterToggle.checked;
     const mode = document.querySelector('input[name="scanMode"]:checked').value;
@@ -17,6 +17,19 @@ scanBtn.addEventListener('click', () => {
     resultsDiv.innerHTML = "";
     loader.style.display = "block";
     scanBtn.disabled = true;
+
+    // --- Caching Logic: Check for existing results to save quota ---
+    const cacheKey = `dmuc_cache_${mode}`;
+    const cachedData = await chrome.storage.local.get([cacheKey]);
+
+    // Use cache if it exists and is less than 30 minutes old
+    if (cachedData[cacheKey] && (Date.now() - cachedData[cacheKey].timestamp < 30 * 60000)) {
+        console.log("Loading results from cache...");
+        renderResults(cachedData[cacheKey].emails, showOnlyAcceptance);
+        loader.style.display = "none";
+        scanBtn.disabled = false;
+        return;
+    }
 
     chrome.runtime.sendMessage({
         action: "scan_emails",
@@ -27,37 +40,50 @@ scanBtn.addEventListener('click', () => {
         scanBtn.disabled = false;
 
         if (response && response.emails) {
-            let filtered = response.emails.filter(e => e.score > 0);
+            // Store results in cache with current timestamp
+            chrome.storage.local.set({
+                [cacheKey]: {
+                    emails: response.emails,
+                    timestamp: Date.now()
+                }
+            });
 
-            const foundAcceptance = filtered.some(e => e.category === "ADMITTED");
-            if (foundAcceptance) triggerConfetti();
-
-            if (showOnlyAcceptance) {
-                filtered = filtered.filter(e => e.category === "ADMITTED");
-            }
-
-            if (filtered.length === 0) {
-                resultsDiv.innerHTML = `<div style="text-align:center; padding: 20px; color:#64748b; font-size:0.85rem;">No accepted emails found, but don't worry - you're still in the running!</div>`;
-                return;
-            }
-
-            resultsDiv.innerHTML = filtered.map(e => `
-    <div class="result-card" style="border-left-color: ${getColor(e.category)};">
-        <span class="tooltip">${e.reason || 'No specific reason provided.'}</span>
-        <div style="font-weight: 700; color: #1e293b; font-size: 0.85rem;">${e.subject}</div>
-        <div style="font-size: 0.7rem; color: ${getColor(e.category)}; font-weight: 800; margin-top: 6px; text-transform: uppercase;">
-            ${e.category} • Score: ${e.score}%
-        </div>
-        <a href="https://mail.google.com/mail/u/0/#inbox/${e.threadId}" target="_blank" class="view-btn">
-            View Email ↗
-        </a>
-    </div>
-`).join('');
+            renderResults(response.emails, showOnlyAcceptance);
         } else {
             resultsDiv.innerHTML = `<p style="color:#ef4444; font-size:0.8rem; text-align:center;">${response?.status || "Error"}</p>`;
         }
     });
 });
+
+// Modularized render function to maintain exactly the same styles and logic
+function renderResults(emails, showOnlyAcceptance) {
+    let filtered = emails.filter(e => e.score > 0);
+
+    const foundAcceptance = filtered.some(e => e.category === "ADMITTED");
+    if (foundAcceptance) triggerConfetti();
+
+    if (showOnlyAcceptance) {
+        filtered = filtered.filter(e => e.category === "ADMITTED");
+    }
+
+    if (filtered.length === 0) {
+        resultsDiv.innerHTML = `<div style="text-align:center; padding: 20px; color:#64748b; font-size:0.85rem;">No accepted emails found, but don't worry - you're still in the running!</div>`;
+        return;
+    }
+
+    resultsDiv.innerHTML = filtered.map(e => `
+        <div class="result-card" style="border-left-color: ${getColor(e.category)};">
+            <span class="tooltip">${e.reason || 'No specific reason provided.'}</span>
+            <div style="font-weight: 700; color: #1e293b; font-size: 0.85rem;">${e.subject}</div>
+            <div style="font-size: 0.7rem; color: ${getColor(e.category)}; font-weight: 800; margin-top: 6px; text-transform: uppercase;">
+                ${e.category} • Score: ${e.score}%
+            </div>
+            <a href="https://mail.google.com/mail/u/0/#inbox/${e.threadId}" target="_blank" class="view-btn">
+                View Email ↗
+            </a>
+        </div>
+    `).join('');
+}
 
 function getColor(cat) {
     if (cat === "ADMITTED") return "#FF8C00";
