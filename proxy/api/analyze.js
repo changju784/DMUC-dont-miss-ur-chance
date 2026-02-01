@@ -39,6 +39,14 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
+        if (data.error) {
+            console.error("Gemini API Error:", data.error.message);
+            return res.status(data.error.code || 500).json({
+                error: data.error.message,
+                isRateLimit: data.error.code === 429
+            });
+        }
+
         console.log("--- DEBUG: RAW AI RESPONSE START ---");
         console.log(JSON.stringify(data, null, 2));
         console.log("--- DEBUG: RAW AI RESPONSE END ---");
