@@ -15,5 +15,12 @@
     },
     "action": {
         "default_popup": "popup.html"
+    },
+    "oauth2": {
+        "client_id": "97219276209-svg7t8gkrrr249nvaruhga7jip6r7dlm.apps.googleusercontent.com",
+        "scopes": [
+            "https://www.googleapis.com/auth/gmail.readonly",
+            "email"
+        ]
     }
 }

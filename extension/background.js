@@ -45,25 +45,42 @@ async function handleFullScan(days, mode) {
 }
 
 async function fetchEmailDetails(days) {
-    // Logic remains exactly as provided
-    const { token } = await chrome.identity.getAuthToken({ interactive: true });
-    const after = Math.floor(Date.now() / 1000) - (days * 86400);
-    const res = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages?q=after:${after}&maxResults=15`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (!data.messages) return [];
+    try {
+        // Set interactive to false; the popup handles the user-facing login
+        const { token } = await chrome.identity.getAuthToken({ interactive: false });
 
-    return Promise.all(data.messages.map(async (msg) => {
-        const dRes = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
+        if (!token) {
+            throw new Error("Authentication token missing. Please sign in via the popup.");
+        }
+
+        const after = Math.floor(Date.now() / 1000) - (days * 86400);
+        const res = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages?q=after:${after}&maxResults=15`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        const d = await dRes.json();
-        return {
-            id: msg.id,
-            threadId: d.threadId,
-            subject: d.payload.headers.find(h => h.name === 'Subject')?.value || "No Subject",
-            snippet: d.snippet || ""
-        };
-    }));
+
+        const data = await res.json();
+
+        // If no messages or an error from Google API
+        if (!data.messages) {
+            console.log("No messages found or API error:", data.error?.message || "none");
+            return [];
+        }
+
+        return await Promise.all(data.messages.map(async (msg) => {
+            const dRes = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const d = await dRes.json();
+
+            return {
+                id: msg.id,
+                threadId: d.threadId,
+                subject: d.payload.headers.find(h => h.name === 'Subject')?.value || "No Subject",
+                snippet: d.snippet || ""
+            };
+        }));
+    } catch (err) {
+        console.error("fetchEmailDetails failed:", err);
+        throw err;
+    }
 }

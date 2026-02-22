@@ -22,7 +22,6 @@ scanBtn.addEventListener('click', async () => {
     const cacheKey = `dmuc_cache_${mode}`;
     const cachedData = await chrome.storage.local.get([cacheKey]);
 
-    // Use cache if it exists and is less than 30 minutes old
     if (cachedData[cacheKey] && (Date.now() - cachedData[cacheKey].timestamp < 30 * 60000)) {
         console.log("Loading results from cache...");
         renderResults(cachedData[cacheKey].emails, showOnlyAcceptance);
@@ -31,27 +30,35 @@ scanBtn.addEventListener('click', async () => {
         return;
     }
 
-    chrome.runtime.sendMessage({
-        action: "scan_emails",
-        days: days,
-        mode: mode
-    }, (response) => {
-        loader.style.display = "none";
-        scanBtn.disabled = false;
-
-        if (response && response.emails) {
-            // Store results in cache with current timestamp
-            chrome.storage.local.set({
-                [cacheKey]: {
-                    emails: response.emails,
-                    timestamp: Date.now()
-                }
-            });
-
-            renderResults(response.emails, showOnlyAcceptance);
-        } else {
-            resultsDiv.innerHTML = `<p style="color:#ef4444; font-size:0.8rem; text-align:center;">${response?.status || "Error"}</p>`;
+    chrome.identity.getAuthToken({ interactive: true }, (token) => {
+        if (chrome.runtime.lastError || !token) {
+            console.error("Auth failed:", chrome.runtime.lastError);
+            resultsDiv.innerHTML = `<p style="color:#ef4444; font-size:0.8rem; text-align:center;">Sign-in required to scan emails.</p>`;
+            loader.style.display = "none";
+            scanBtn.disabled = false;
+            return;
         }
+
+        chrome.runtime.sendMessage({
+            action: "scan_emails",
+            days: days,
+            mode: mode
+        }, (response) => {
+            loader.style.display = "none";
+            scanBtn.disabled = false;
+
+            if (response && response.emails) {
+                chrome.storage.local.set({
+                    [cacheKey]: {
+                        emails: response.emails,
+                        timestamp: Date.now()
+                    }
+                });
+                renderResults(response.emails, showOnlyAcceptance);
+            } else {
+                resultsDiv.innerHTML = `<p style="color:#ef4444; font-size:0.8rem; text-align:center;">${response?.status || "Scan failed. Please try again."}</p>`;
+            }
+        });
     });
 });
 
