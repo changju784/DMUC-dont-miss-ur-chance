@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "DMUC - Don't Miss Ur Chance",
-    "version": "2.0",
+    "version": "2.1",
     "permissions": [
         "identity",
         "storage"
